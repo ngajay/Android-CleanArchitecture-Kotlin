@@ -14,12 +14,13 @@ abstract class BaseActivity : AppCompatActivity() {
         addFragment(savedInstanceState)
     }
 
-    private fun addFragment(savedInstanceState: Bundle?) {
-        savedInstanceState ?:
-                supportFragmentManager.inTransaction { add(R.id.fragmentContainer, fragment()) }
+    override fun onBackPressed() {
+        (supportFragmentManager.findFragmentById(R.id.fragmentContainer) as BaseFragment).onBackPressed()
+        super.onBackPressed()
     }
 
-    internal fun noToolbar() = supportActionBar?.hide()
+    private fun addFragment(savedInstanceState: Bundle?) =
+            savedInstanceState ?: supportFragmentManager.inTransaction { add(R.id.fragmentContainer, fragment()) }
 
     abstract fun fragment(): BaseFragment
 }

@@ -19,4 +19,8 @@ abstract class BaseFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater?.inflate(layoutId(), container, false)
+
+    open fun onBackPressed() {}
+
+    internal fun firstTimeCreated(savedInstanceState: Bundle?) = savedInstanceState == null
 }

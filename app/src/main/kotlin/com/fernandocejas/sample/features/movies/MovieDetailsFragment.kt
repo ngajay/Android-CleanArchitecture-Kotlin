@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.View
 import com.fernandocejas.sample.BaseFragment
 import com.fernandocejas.sample.R
+import com.fernandocejas.sample.framework.extension.loadFromUrl
 import com.fernandocejas.sample.framework.extension.loadUrlAndPostponeEnterTransition
+import com.fernandocejas.sample.framework.extension.visible
 import kotlinx.android.synthetic.main.fragment_movie_details.*
+import kotlinx.android.synthetic.main.toolbar.*
 import javax.inject.Inject
 
 class MovieDetailsFragment : BaseFragment(), MovieDetailsView {
@@ -23,13 +26,14 @@ class MovieDetailsFragment : BaseFragment(), MovieDetailsView {
     }
 
     @Inject lateinit var movieDetailsPresenter: MovieDetailsPresenter
+    @Inject lateinit var movieDetailsAnimator: MovieDetailsAnimator
 
     override fun layoutId() = R.layout.fragment_movie_details
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activity.supportPostponeEnterTransition()
         appComponent.inject(this)
+        movieDetailsAnimator.postponeEnterTransition(activity)
     }
 
     override fun onDestroy() {
@@ -39,19 +43,35 @@ class MovieDetailsFragment : BaseFragment(), MovieDetailsView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeView()
-        savedInstanceState ?: loadMovieDetails()
+        if (firstTimeCreated(savedInstanceState)) {
+            initializeView()
+            loadMovieDetails() }
+        else {
+            movieDetailsAnimator.scaleUpView(moviePlay)
+            movieDetailsAnimator.cancelTransition(moviePoster)
+            moviePoster.loadFromUrl((arguments[PARAM_MOVIE] as MovieViewModel).poster)
+        }
+    }
+
+    override fun onBackPressed() {
+        movieDetailsAnimator.fadeInvisible(scrollView, movieDetails)
+        if (moviePlay.visible())
+            movieDetailsAnimator.scaleDownView(moviePlay)
+        else
+            movieDetailsAnimator.cancelTransition(moviePoster)
     }
 
     override fun renderDetails(movie: MovieDetailsViewModel) {
         with(movie) {
             moviePoster.loadUrlAndPostponeEnterTransition(poster, activity)
-//            movieTitle.text = title
+            activity.toolbar.title = title
             movieSummary.text = summary
             movieCast.text = cast
             movieDirector.text = director
             movieYear.text = year.toString()
         }
+        movieDetailsAnimator.fadeVisible(scrollView, movieDetails)
+        movieDetailsAnimator.scaleUpView(moviePlay)
     }
 
     override fun showLoading() {
