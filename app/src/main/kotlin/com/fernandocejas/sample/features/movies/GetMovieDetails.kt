@@ -3,15 +3,15 @@ package com.fernandocejas.sample.features.movies
 import com.fernandocejas.sample.features.movies.GetMovieDetails.Params
 import com.fernandocejas.sample.framework.executor.ExecutionScheduler
 import com.fernandocejas.sample.framework.interactor.UseCase
-import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 
 class GetMovieDetails
 @Inject constructor(private val moviesRepository: MoviesRepository,
-                    private val scheduler: ExecutionScheduler) : UseCase<MovieDetails, Params>() {
+                    private val scheduler: ExecutionScheduler) : UseCase.RxSingle<MovieDetails, Params>() {
 
-    override fun buildObservable(params: Params?): Observable<MovieDetails> =
-        moviesRepository.movieDetails(params!!.id).compose(scheduler.applyHighPriorityScheduler())
+    override fun build(params: Params?): Single<MovieDetails> =
+            moviesRepository.movieDetails(params!!.id).compose(scheduler.highPrioritySingle())
 
-    class Params(val id: Int)
+    data class Params(val id: Int)
 }

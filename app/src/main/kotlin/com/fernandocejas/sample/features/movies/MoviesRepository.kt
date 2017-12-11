@@ -1,16 +1,15 @@
 package com.fernandocejas.sample.features.movies
 
-import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 
 interface MoviesRepository {
-    fun movies(): Observable<List<Movie>>
-    fun movieDetails(movieId: Int): Observable<MovieDetails>
+    fun movies(): Single<List<Movie>>
+    fun movieDetails(movieId: Int): Single<MovieDetails>
 
     class Source
     @Inject constructor(private val dataSourceFactory: MoviesDataSource.Factory) : MoviesRepository {
-        override fun movies(): Observable<List<Movie>> = dataSourceFactory.network().movies()
-        override fun movieDetails(movieId: Int): Observable<MovieDetails> =
-                dataSourceFactory.network().movieDetails(movieId)
+        override fun movies() = dataSourceFactory.network().movies()
+        override fun movieDetails(movieId: Int) = dataSourceFactory.network().movieDetails(movieId)
     }
 }

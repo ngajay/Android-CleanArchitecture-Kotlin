@@ -1,19 +1,20 @@
 package com.fernandocejas.sample.features.movies
 
 import com.fernandocejas.sample.TestScheduler
-import com.fernandocejas.sample.TestScheduler.Function.applyHighPriorityScheduler
+import com.fernandocejas.sample.TestScheduler.Function.highPrioritySingle
 import com.fernandocejas.sample.UnitTest
 import com.fernandocejas.sample.framework.extension.empty
 import com.fernandocejas.sample.framework.interactor.UseCase
 import com.nhaarman.mockito_kotlin.given
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.verifyNoMoreInteractions
-import io.reactivex.Observable
+import io.reactivex.Single
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 
 class GetMoviesTest : UnitTest() {
+
     private lateinit var getMovies: GetMovies
 
     @Mock private lateinit var moviesRepository: MoviesRepository
@@ -22,17 +23,17 @@ class GetMoviesTest : UnitTest() {
 
     @Before fun setUp() {
         getMovies = GetMovies(moviesRepository, testScheduler)
-        given { moviesRepository.movies() } .willReturn(createMovieListObservable())
+        given { moviesRepository.movies() }.willReturn(createMovieList())
     }
 
-    @Test fun shouldGetDataFromRepository() {
-        getMovies.buildObservable(UseCase.None())
+    @Test fun `should get data from repository`() {
+        getMovies.build(UseCase.None())
 
         verify(moviesRepository).movies()
         verifyNoMoreInteractions(moviesRepository)
 
-        testScheduler verify applyHighPriorityScheduler
+        testScheduler verify highPrioritySingle
     }
 
-    private fun createMovieListObservable() = Observable.just(listOf(Movie.create { String.empty() }))
+    private fun createMovieList() = Single.just(listOf(Movie.create { String.empty() }))
 }

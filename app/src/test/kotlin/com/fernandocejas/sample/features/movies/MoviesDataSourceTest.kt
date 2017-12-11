@@ -5,13 +5,14 @@ import com.fernandocejas.sample.features.movies.MoviesDataSource.Network
 import com.fernandocejas.sample.framework.network.RestApi
 import com.nhaarman.mockito_kotlin.given
 import com.nhaarman.mockito_kotlin.verify
-import io.reactivex.Observable
+import io.reactivex.Single
 import org.amshove.kluent.shouldEqual
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 
-class MoviesDataSourceNetworkTest : UnitTest() {
+class MoviesDataSourceTest : UnitTest() {
+
     private val MOVIE_ID = 1
     private val MOVIE_POSTER = "poster_url"
 
@@ -21,10 +22,10 @@ class MoviesDataSourceNetworkTest : UnitTest() {
 
     @Before fun setUp() {
         network = Network(restApi)
-        given { restApi.movies() } .willReturn(createMovieEntitiesList())
+        given { restApi.movies() }.willReturn(createMovieEntitiesList())
     }
 
-    @Test fun shouldGetDataFromRestApi() {
+    @Test fun `should get data from rest api`() {
         val testObserver = network.movies().test()
 
         val movie = testObserver.values()[0][0]
@@ -38,8 +39,8 @@ class MoviesDataSourceNetworkTest : UnitTest() {
         verify(restApi).movies()
     }
 
-    fun createMovieEntitiesList(): Observable<List<MovieEntity>> {
+    fun createMovieEntitiesList(): Single<List<MovieEntity>> {
         val movieEntity = MovieEntity(MOVIE_ID, MOVIE_POSTER)
-        return Observable.just(listOf(movieEntity))
+        return Single.just(listOf(movieEntity))
     }
 }
