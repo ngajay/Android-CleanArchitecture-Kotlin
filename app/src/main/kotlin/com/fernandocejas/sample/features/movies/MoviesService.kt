@@ -1,11 +1,11 @@
-package com.fernandocejas.sample.framework.network
+package com.fernandocejas.sample.features.movies
 
 import retrofit2.Retrofit
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RestApi
+class MoviesService
 @Inject constructor(retrofit: Retrofit) : MoviesApi {
     private val moviesApi by lazy { retrofit.create(MoviesApi::class.java) }
 

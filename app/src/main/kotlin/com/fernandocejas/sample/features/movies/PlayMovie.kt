@@ -7,20 +7,21 @@ import android.net.Uri
 import com.fernandocejas.sample.features.movies.PlayMovie.Params
 import com.fernandocejas.sample.framework.extension.empty
 import com.fernandocejas.sample.framework.interactor.UseCase
-import io.reactivex.Completable
+import com.fernandocejas.sample.framework.interactor.UseCase.None
 import javax.inject.Inject
 
-
 class PlayMovie
-@Inject constructor() : UseCase.RxCompletable<Params>() {
+@Inject constructor(private val context: Context) : UseCase<None, Params>() {
 
     private val VIDEO_URL_HTTP = "http://www.youtube.com/watch?v="
     private val VIDEO_URL_HTTPS = "https://www.youtube.com/watch?v="
 
-    override fun build(params: Params?): Completable =
-        Completable.fromAction { watchVideoFromUrl(params!!.context, params.url) }
+    override suspend fun run(params: Params): None {
+        watchVideoFromUrl(params.url)
+        return None()
+    }
 
-    private fun watchVideoFromUrl(context: Context, videoUrl: String) {
+    private fun watchVideoFromUrl(videoUrl: String) {
         try {
             context.startActivity(createYoutubeIntent(videoUrl))
         } catch (ex: ActivityNotFoundException) {
@@ -41,5 +42,5 @@ class PlayMovie
         return intent
     }
 
-    data class Params(val context: Context, val url: String)
+    data class Params(val url: String)
 }

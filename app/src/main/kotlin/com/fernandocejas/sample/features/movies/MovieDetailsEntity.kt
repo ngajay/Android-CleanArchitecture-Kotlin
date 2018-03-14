@@ -1,5 +1,7 @@
 package com.fernandocejas.sample.features.movies
 
+import com.fernandocejas.sample.framework.extension.empty
+
 data class MovieDetailsEntity(private val id: Int,
                               private val title: String,
                               private val poster: String,
@@ -9,18 +11,10 @@ data class MovieDetailsEntity(private val id: Int,
                               private val year: Int,
                               private val trailer: String) {
 
-    fun toMovieDetails(): MovieDetails {
-        return MovieDetails.create {
-            this@MovieDetailsEntity.let {
-                id = it.id
-                title = it.title
-                poster = it.poster
-                summary = it.summary
-                cast = it.cast
-                director = it.director
-                year = it.year
-                trailer = it.trailer
-            }
-        }
+    companion object {
+        fun empty() = MovieDetailsEntity(0, String.empty(), String.empty(), String.empty(),
+                String.empty(), String.empty(), 0, String.empty())
     }
+
+    fun toMovieDetails() = MovieDetails(id, title, poster, summary, cast, director, year, trailer)
 }

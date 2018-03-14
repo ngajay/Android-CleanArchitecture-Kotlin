@@ -1,6 +1,5 @@
 package com.fernandocejas.sample.features.movies
 
-import android.content.Context
 import javax.inject.Inject
 
 class MovieDetailsPresenter
@@ -8,12 +7,6 @@ class MovieDetailsPresenter
                     private val playMovie: PlayMovie) {
 
     internal lateinit var movieDetailsView: MovieDetailsView
-
-    fun destroy() {
-        getMovieDetails.dispose()
-        playMovie.dispose()
-        movieDetailsView.dispose()
-    }
 
     fun loadMovieDetails(movieId: Int) {
         movieDetailsView.showLoading()
@@ -23,11 +16,8 @@ class MovieDetailsPresenter
                             movie.summary, movie.cast, movie.director, movie.year, movie.trailer)
                     movieDetailsView.renderDetails(viewModel)
                     movieDetailsView.hideLoading() },
-                { TODO() },
                 GetMovieDetails.Params(movieId))
     }
 
-    fun playMovie(context: Context, url: String) {
-        playMovie.execute(PlayMovie.Params(context, url))
-    }
+    fun playMovie(url: String) = playMovie.execute({}, PlayMovie.Params(url))
 }

@@ -22,15 +22,10 @@ class MoviesFragment : BaseFragment(), MoviesView {
         appComponent.inject(this)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
         if (firstTimeCreated(savedInstanceState)) { initializeView(); loadMovies() }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        moviesPresenter.destroy()
     }
 
     override fun renderList(movies: List<MovieViewModel>) {
@@ -38,7 +33,7 @@ class MoviesFragment : BaseFragment(), MoviesView {
     }
 
     override fun displayDetails(movie: MovieViewModel, navigationExtras: Navigator.Extras) {
-        navigator.showMovieDetails(activity, movie, navigationExtras)
+        activity?.let { navigator.showMovieDetails(it, movie, navigationExtras) }
     }
 
     override fun showLoading() {
@@ -47,10 +42,6 @@ class MoviesFragment : BaseFragment(), MoviesView {
 
     override fun hideLoading() {
         //TODO: implement method
-    }
-
-    override fun dispose() {
-        //TODO: dispose view resources
     }
 
     private fun initializeView() {
